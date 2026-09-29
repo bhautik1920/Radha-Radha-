@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Radhe Radhe Counter</title>
+<style>
+:root{--ink:#5b1a3a;--card:rgba(255,255,255,.72);--btn1:#ff7eb3;--btn2:#ff9f43;--bg1:#ffe3ef;--bg2:#e6e9ff;--bg3:#fff1d6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#ffe3ef;--card:rgba(40,15,35,.68);--bg1:#3a1030;--bg2:#1b1440;--bg3:#3b2410}}
+:root[data-theme="dark"]{--ink:#ffe3ef;--card:rgba(40,15,35,.68);--bg1:#3a1030;--bg2:#1b1440;--bg3:#3b2410}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+body.custom::before{content:"";position:fixed;inset:0;background:var(--bgimg) center/cover no-repeat;opacity:.85;z-index:0}
+.deco{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.55}
+main{position:relative;z-index:1;width:min(92vw,440px);text-align:center;background:var(--card);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+border-radius:28px;padding:28px 22px;box-shadow:0 12px 40px rgba(120,30,80,.25);max-height:100%;overflow:auto}
+h1{margin:0 0 4px;font-size:1.6rem;letter-spacing:.5px}
+.sub{margin:0 0 14px;font-size:.95rem;opacity:.8}
+.count{font-size:4.5rem;font-weight:700;line-height:1;margin:6px 0}
+.lbl{font-size:.95rem;opacity:.85;margin-bottom:14px}
+#chant{width:min(62vw,220px);aspect-ratio:1;border-radius:50%;border:6px solid rgba(255,255,255,.8);cursor:pointer;color:#fff;font:700 1.5rem Georgia,serif;
+background:radial-gradient(circle at 35% 30%,var(--btn2),var(--btn1));box-shadow:0 10px 26px rgba(255,80,140,.5);transition:transform .08s;-webkit-tap-highlight-color:transparent}
+#chant:active{transform:scale(.93)}
+.bar{height:10px;border-radius:9px;background:rgba(150,80,120,.2);margin:18px 0 4px;overflow:hidden}
+#fill{height:100%;width:0;background:linear-gradient(90deg,var(--btn1),var(--btn2));transition:width .2s}
+.mala{font-size:.9rem;opacity:.85}
+.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.row button,.row label{font:inherit;font-size:.85rem;padding:8px 14px;border-radius:20px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.float{position:fixed;z-index:2;font-weight:700;font-size:1.3rem;color:var(--btn1);pointer-events:none;animation:up 1.1s ease-out forwards;text-shadow:0 1px 6px rgba(255,255,255,.7)}
+@keyframes up{to{transform:translateY(-120px);opacity:0}}
+</style>
+</head>
+<body>
+<svg class="deco" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs><g id="lotus"><ellipse cx="0" cy="-18" rx="9" ry="22" fill="#ff7eb3"/><ellipse cx="-16" cy="-12" rx="8" ry="20" fill="#ff9ec7" transform="rotate(-35 -16 -12)"/><ellipse cx="16" cy="-12" rx="8" ry="20" fill="#ff9ec7" transform="rotate(35 16 -12)"/><ellipse cx="-27" cy="-2" rx="7" ry="17" fill="#ffc2dc" transform="rotate(-65 -27 -2)"/><ellipse cx="27" cy="-2" rx="7" ry="17" fill="#ffc2dc" transform="rotate(65 27 -2)"/></g>
+<g id="feather"><path d="M0 0C-30-40-30-90 0-130 30-90 30-40 0 0Z" fill="#1fa39a"/><ellipse cx="0" cy="-88" rx="14" ry="22" fill="#2a4fb8"/><ellipse cx="0" cy="-88" rx="6" ry="11" fill="#f5c542"/></g></defs>
+<use href="#lotus" transform="translate(60 640) scale(2)"/><use href="#lotus" transform="translate(340 620) scale(1.6)"/><use href="#lotus" transform="translate(200 690) scale(1.3)"/>
+<use href="#feather" transform="translate(50 190) rotate(-20) scale(1.2)"/><use href="#feather" transform="translate(355 210) rotate(22) scale(1.1)"/>
+<circle cx="200" cy="70" r="46" fill="#ffd166" opacity=".6"/><path d="M120 70h160" stroke="#c98a2b" stroke-width="7" stroke-linecap="round"/>
+</svg>
+<main>
+<h1>🪷 Radhe Radhe 🪷</h1>
+<p class="sub">Tap the button to chant</p>
+<div class="count" id="n">0</div>
+<div class="lbl">times “Radhe Radhe” chanted</div>
+<button id="chant" aria-label="Chant Radhe Radhe">Radhe<br>Radhe</button>
+<div class="bar"><div id="fill"></div></div>
+<div class="mala" id="mala">Mala 0 · 0 / 108</div>
+<div class="row">
+<label>🖼️ Add Radha image<input id="file" type="file" accept="image/*" hidden></label>
+<button id="clear">Remove image</button>
+<button id="reset">Reset</button>
+</div>
+</main>
+<script>
+(function(){
+var n=0,$=function(i){return document.getElementById(i)};
+function get(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function del(k){try{localStorage.removeItem(k)}catch(e){}}
+function render(){$("n").textContent=n.toLocaleString();var r=n%108;$("fill").style.width=(r/108*100)+"%";$("mala").textContent="Mala "+Math.floor(n/108)+" · "+r+" / 108"}
+function setBg(u){if(u){document.body.style.setProperty("--bgimg","url("+u+")");document.body.classList.add("custom")}else{document.body.classList.remove("custom")}}
+n=parseInt(get("radhe-count"),10)||0;render();setBg(get("radhe-bg"));
+$("chant").addEventListener("click",function(e){n++;set("radhe-count",n);render();
+var f=document.createElement("div");f.className="float";f.textContent="Radhe Radhe";
+var x=e.clientX||innerWidth/2,y=e.clientY||innerHeight/2;f.style.left=Math.max(10,Math.min(innerWidth-120,x-50))+"px";f.style.top=y+"px";
+document.body.appendChild(f);setTimeout(function(){f.remove()},1100);
+if(navigator.vibrate){try{navigator.vibrate(15)}catch(_){}}});
+$("reset").addEventListener("click",function(){n=0;set("radhe-count",0);render()});
+$("clear").addEventListener("click",function(){del("radhe-bg");setBg(null)});
+$("file").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();
+r.onload=function(){var img=new Image();img.onload=function(){var s=Math.min(1,1200/Math.max(img.width,img.height)),c=document.createElement("canvas");
+c.width=img.width*s;c.height=img.height*s;c.getContext("2d").drawImage(img,0,0,c.width,c.height);var u=c.toDataURL("image/jpeg",.8);setBg(u);set("radhe-bg",u)};img.src=r.result};r.readAsDataURL(f)});
+})();
+</script>
+</body>
+</html>
